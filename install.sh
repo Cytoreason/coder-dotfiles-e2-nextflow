@@ -1,34 +1,14 @@
 #!/usr/bin/env bash
 #
-PROJECT_DIR_NAME=pipeline-nextflow
+PROJECT_DIR_NAME=e2-nextflow
 pushd .
 if [ ! -d "~/$PROJECT_DIR_NAME" ]; then
     cd
     
     sudo apt-get update && sudo apt-get install tree tldr -y
 
-    # Add NXF_PLUGINS_DIR export to the top of ~/.bashrc if not already present
-grep -qxF 'export NXF_PLUGINS_DIR="/home/coder/pipeline-nextflow/plugins"' /home/coder/.bashrc || sed -i '1i export NXF_PLUGINS_DIR="/home/coder/pipeline-nextflow/plugins"' /home/coder/.bashrc
-
-    echo "Installing Java"
-    curl -s https://get.sdkman.io | bash 
-    source "/home/coder/.sdkman/bin/sdkman-init.sh"
-    sdk install java 17.0.10-tem
-    source ~/.bashrc
-    echo "Installing Nextflow"
-    curl -s https://get.nextflow.io | bash
-    chmod +x nextflow
-    mkdir -p $HOME/.local/bin/
-    mv nextflow $HOME/.local/bin/
-    nextflow info
-
-    git clone https://github.com/Cytoreason/$PROJECT_DIR_NAME.git
-    cd $PROJECT_DIR_NAME
-    git pull 
-
-    curl https://install.duckdb.org | sh
-    sed -i '/^alias dq=/d' ~/.bashrc && echo "alias dq='f(){ duckdb -c \"SELECT * FROM '\\''\$1'\\''\"; }; f'" >> ~/.bashrc
-    source ~/.bashrc
+    echo "Installing nextflow with conda"
+    conda install nextflow -c bioconda
     echo "Installing VS Code Server Python extensions..."
     /tmp/code-server/bin/code-server --install-extension nextflow.nextflow
     /tmp/code-server/bin/code-server --install-extension ms-python.debugpy
@@ -51,11 +31,5 @@ grep -qxF 'export NXF_PLUGINS_DIR="/home/coder/pipeline-nextflow/plugins"' /home
 EOF
     fi
 fi
-export LAKECTL_CREDENTIALS_ACCESS_KEY_ID=`gcloud secrets versions access latest --secret=LAKEFS_ACCESS_KEY_ID`
-export LAKECTL_CREDENTIALS_SECRET_ACCESS_KEY=`gcloud secrets versions access latest --secret=LAKEFS_SECRET_ACCESS_KEY`
 export TOWER_ACCESS_TOKEN=`gcloud secrets versions access latest --secret=TOWER_ACCESS_TOKEN`
-export client_id_secret_name="CLIENT_ID_M2M_PUBLIC_SCOPE"
-export client_secret_secret_name="CLIENT_SECRET_M2M_PUBLIC"
-export CLIENT_ID=`gcloud secrets versions access latest --secret=${client_id_secret_name}`
-export CLIENT_SECRET=`gcloud secrets versions access latest --secret=${client_secret_secret_name}`
 popd
