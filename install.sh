@@ -11,7 +11,7 @@ if [ ! -d "~/$PROJECT_DIR_NAME" ]; then
     git pull 
 
     echo "Installing nextflow with conda"
-    conda install nextflow -c bioconda
+    conda install nextflow -c bioconda -y
     echo "Installing VS Code Server Python extensions..."
     /tmp/code-server/bin/code-server --install-extension nextflow.nextflow
     /tmp/code-server/bin/code-server --install-extension ms-python.debugpy
